@@ -1,11 +1,17 @@
 const express = require('express')
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = "JWT SECRET"
 
-// TODO: issue JWT
-const genJWT = (path) => {
-  return path
+const issueToken = (path) => {
+  return jwt.sign(
+    {
+      aud: [path]
+    },
+    JWT_SECRET,
+    { algorithm: 'HS256' }
+  );
 }
 
 const login = (username, password) => {
@@ -31,6 +37,13 @@ const app = express()
 
 app.use(bodyParser.json());
 
+// allow CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'Content-Type')
+  next()
+})
+
 app.post('/auth', (req, res) => {
   const { username, password, path } = req.body
 
@@ -40,7 +53,7 @@ app.post('/auth', (req, res) => {
   if (user && pathAllowed(user, path)) {
     res.send({
       success: true,
-      token: genJWT(path)
+      token: issueToken(path)
     })
   } else {
     res.send({
@@ -49,4 +62,4 @@ app.post('/auth', (req, res) => {
   }
 })
 
-app.listen(3000)
+app.listen(process.env.PORT || 3000)

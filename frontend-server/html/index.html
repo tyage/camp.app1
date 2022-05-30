@@ -1,7 +1,12 @@
 <script src="https://unpkg.com/vue@3"></script>
 
 <div id="app">
-  <div v-if="loggedIn"></div>
+  <div v-if="loggedIn">
+    Welcome {{ username }}!
+
+    Notification:
+    {{ notice }}
+  </div>
   <div v-else>
     <div>
       Username: <input type="text" name="username" v-model="username">
@@ -24,20 +29,41 @@
         loggedIn: false,
         username: null,
         password: null,
-        token: null
+        token: null,
+        notice: null
       }
     },
     methods: {
       async login() {
-        const req = await fetch('http://localhost:30081', {
-          method: 'POST',
-          body: JSON.stringify({ username: this.username, password: this.password })
+        const authServerURL = 'http://localhost:30081/auth'
+        const body = JSON.stringify({
+          username: this.username,
+          password: this.password,
+          path: `/${this.username}`
         })
-        const response = await req.json()
+        const request = await fetch(authServerURL, {
+          method: 'POST',
+          body: body,
+          headers: { 'Content-Type': 'application/json' }
+        })
+        const response = await request.json()
         if (response?.success) {
           this.loggedIn = true
           this.token = response.token
+          this.fetchNotice()
         }
+      },
+      async fetchNotice() {
+        const resourceServerURL = `http://localhost:30082/${this.username}`
+        const request = await fetch(resourceServerURL, {
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        })
+        const response = await request.json()
+
+        // update notice
+        this.notice = response?.data
       }
     }
   }).mount('#app')
