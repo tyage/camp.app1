@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  resource:
+    build: ./resource-server
+
+    args: 
+      VARIANT: 11-bullseye
+
+    ports:
+    - 10081:8080
+
+    command: sleep infinity
+
+    volumes:
+      - ..:/workspace:cached
+
+  auth:
+    build: ./auth-server
+
+    ports:
+    - 10080:3000
