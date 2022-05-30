@@ -19,6 +19,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class AuthFilter extends OncePerRequestFilter {
+  // secret key is shared with authorization service
+  private String JWT_SECRET_KEY = "SECRET KEY";
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -31,6 +33,7 @@ public class AuthFilter extends OncePerRequestFilter {
     }
   }
 
+  // check jwt token is valid and request path is allowed
   private Boolean isJwtValid(HttpServletRequest request) {
     final String jwtToken = retrieveToken(request);
     if (jwtToken == null) {
@@ -39,14 +42,14 @@ public class AuthFilter extends OncePerRequestFilter {
 
     DecodedJWT jwt;
     try {
-      Algorithm algorithm = Algorithm.HMAC256("SECRET KEY");
+      Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET_KEY);
       JWTVerifier verifier = JWT.require(algorithm).build();
       jwt = verifier.verify(jwtToken);
     } catch (JWTVerificationException exception) {
       return false;
     }
 
-    // check if request path is equal to path in jwt
+    // check request path is equal to path in jwt audience
     List<String> audience = jwt.getAudience();
     if (audience == null) {
       return false;
@@ -55,6 +58,8 @@ public class AuthFilter extends OncePerRequestFilter {
     return matchAudience;
   }
 
+  // retrive authorization token
+  // Authorization: Bearer XXXXXXX
   private String retrieveToken(HttpServletRequest request) {
     final String tokenHeader = request.getHeader("Authorization");
     if (tokenHeader == null || !tokenHeader.startsWith("Bearer ")) {
