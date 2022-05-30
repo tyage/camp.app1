@@ -4,8 +4,14 @@ services:
   resource:
     build: ./resource-server
     ports:
-    - 10081:8080
+      - 30081:8080
   auth:
     build: ./auth-server
     ports:
-    - 10080:3000
+      - 30082:3000
+  frontend:
+    image: nginx
+    volumes:
+      - ./frontend-server/html:/usr/share/nginx/html
+    ports:
+      - 30080:80

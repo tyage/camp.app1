@@ -2,21 +2,25 @@ version: '3'
 
 services:
   resource:
-    build: ./resource-server
-
-    args: 
-      VARIANT: 11-bullseye
-
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args: 
+        VARIANT: 11-bullseye
     ports:
-    - 10081:8080
-
+      - 30081:8080
     command: sleep infinity
-
     volumes:
       - ..:/workspace:cached
 
   auth:
-    build: ./auth-server
-
+    build: ../auth-server
     ports:
-    - 10080:3000
+      - 30082:3000
+
+  frontend:
+    image: nginx
+    volumes:
+      - ../frontend-server/html:/usr/share/nginx/html
+    ports:
+      - 30080:80

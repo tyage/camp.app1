@@ -1,0 +1,42 @@
+<script src="https://unpkg.com/vue@3"></script>
+
+<div id="app">
+  <div v-if="loggedIn"></div>
+  <div v-else>
+    <div>
+      Username: <input type="text" name="username" v-model="username">
+    </div>
+    <div>
+      Password: <input type="password" name="password" v-model="password">
+    </div>
+    <div>
+      <button @click="login">Login</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const { createApp } = Vue
+
+  createApp({
+    data() {
+      return {
+        loggedIn: false,
+        username: '',
+        password: ''
+      }
+    },
+    methods: {
+      async login() {
+        const req = await fetch('http://localhost:30081', {
+          method: 'POST',
+          body: JSON.stringify({ username: this.username, password: this.password })
+        })
+        const response = await req.json()
+        if (response?.success) {
+          this.loggedIn = true
+        }
+      }
+    }
+  }).mount('#app')
+</script>
