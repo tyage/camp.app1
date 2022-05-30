@@ -35,7 +35,7 @@
     },
     methods: {
       async login() {
-        const authServerURL = 'http://localhost:30081/auth'
+        const authServerURL = 'http://localhost:30082/auth'
         const body = JSON.stringify({
           username: this.username,
           password: this.password,
@@ -54,16 +54,16 @@
         }
       },
       async fetchNotice() {
-        const resourceServerURL = `http://localhost:30082/${this.username}`
+        const resourceServerURL = `http://localhost:30081/${this.username}`
         const request = await fetch(resourceServerURL, {
           headers: {
             'Authorization': `Bearer ${this.token}`
           }
         })
-        const response = await request.json()
+        const response = await request.text()
 
         // update notice
-        this.notice = response?.data
+        this.notice = response
       }
     }
   }).mount('#app')

@@ -1,14 +1,16 @@
 package com.example.demo;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin
 @RestController
 public class HomeController {
   @RequestMapping("/{username}")
-  public String home(@PathVariable String username) {
-    return "Hello " + username;
+  public String user(@PathVariable String username) {
+    return "Nothing.";
   }
 
   @RequestMapping("/admin")

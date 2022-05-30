@@ -20,12 +20,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class AuthFilter extends OncePerRequestFilter {
   // secret key is shared with authorization service
-  private final String JWT_SECRET_KEY = "SECRET KEY";
+  private final String JWT_SECRET_KEY = "JWT SECRET";
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
       throws ServletException, IOException {
-    if (isJwtValid(request)) {
+    if (request.getMethod().equals("OPTIONS") || isJwtValid(request)) {
       chain.doFilter(request, response);
     } else {
       response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -58,6 +58,7 @@ public class AuthFilter extends OncePerRequestFilter {
   }
 
   // retrive authorization token
+  // header should be like this
   // Authorization: Bearer XXXXXXX
   private String retrieveToken(HttpServletRequest request) {
     final String tokenPrefix = "Bearer ";
