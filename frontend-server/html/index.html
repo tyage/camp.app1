@@ -22,8 +22,9 @@
     data() {
       return {
         loggedIn: false,
-        username: '',
-        password: ''
+        username: null,
+        password: null,
+        token: null
       }
     },
     methods: {
@@ -35,6 +36,7 @@
         const response = await req.json()
         if (response?.success) {
           this.loggedIn = true
+          this.token = response.token
         }
       }
     }
