@@ -83,7 +83,7 @@
       },
       async fetchNotification() {
         const notificationURL = `http://localhost:30081/${encodeURIComponent(this.username)}`
-        const request = await fetch(e, {
+        const request = await fetch(notificationURL, {
           headers: {
             'Authorization': `Bearer ${this.token}`
           }
