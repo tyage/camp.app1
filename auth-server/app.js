@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = "JWT SECRET"
 
+const passwordTable = new Map()
+passwordTable.set('admin', 'secretadminpassword.gzuOmraX0TXytCw0')
+
 const issueToken = (path) => {
   return jwt.sign(
     {
@@ -15,6 +18,12 @@ const issueToken = (path) => {
 }
 
 const login = (username, password) => {
+  // verify password
+  const savedPassword = passwordTable.get(username)
+  if (!savedPassword || savedPassword !== password) {
+    return false
+  }
+
   let role = 'normal'
   if (username === 'admin') {
     role = 'admin'
@@ -23,6 +32,17 @@ const login = (username, password) => {
     role, username, password
   }
 }
+
+const signup = (username, password) => {
+  // if user is already registered, signup should be failed
+  if (passwordTable.has(username)) {
+    return false
+  }
+
+  passwordTable.set(username, password)
+  return true
+}
+
 const pathAllowed = (user, path) => {
   switch (user.role) {
     case 'admin':
@@ -44,7 +64,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.post('/auth', (req, res) => {
+app.post('/login', (req, res) => {
   const { username, password, path } = req.body
 
   // try login
@@ -60,6 +80,16 @@ app.post('/auth', (req, res) => {
       success: false
     })
   }
+})
+
+app.post('/signup', (req, res) => {
+  const { username, password } = req.body
+
+  const result = signup(username, password)
+
+  res.send({
+    success: result
+  })
 })
 
 app.listen(process.env.PORT || 3000)

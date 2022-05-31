@@ -1,13 +1,34 @@
 <script src="https://unpkg.com/vue@3"></script>
 
 <div id="app">
-  <div v-if="loggedIn">
-    Welcome {{ username }}!
+  <div>{{ error }}</div>
+  <div v-if="page === 'home'">
+    <h1>
+      Welcome {{ username }}!
+    </h1>
 
-    Notification:
-    {{ notice }}
+    <div>
+      <p>Notification:</p>
+      <pre>{{ notice }}</pre>
+    </div>
+  </div>
+  <div v-else-if="page === 'signup'">
+    <h1>Signup</h1>
+    <div>
+      Username: <input type="text" name="username" v-model="username">
+    </div>
+    <div>
+      Password: <input type="password" name="password" v-model="password">
+    </div>
+    <div>
+      <button @click="signup">Signup</button>
+    </div>
+    <div>
+      <a href="#" @click="switchPage('login')">Back to Login</a>
+    </div>
   </div>
   <div v-else>
+    <h1>Login</h1>
     <div>
       Username: <input type="text" name="username" v-model="username">
     </div>
@@ -16,6 +37,9 @@
     </div>
     <div>
       <button @click="login">Login</button>
+    </div>
+    <div>
+      <a href="#" @click="switchPage('signup')">Need Signup?</a>
     </div>
   </div>
 </div>
@@ -26,36 +50,40 @@
   createApp({
     data() {
       return {
-        loggedIn: false,
+        page: 'login',
         username: null,
         password: null,
         token: null,
-        notice: null
+        notice: null,
+        error: null
       }
     },
     methods: {
       async login() {
-        const authServerURL = 'http://localhost:30082/auth'
+        const loginURL = 'http://localhost:30082/login'
         const body = JSON.stringify({
           username: this.username,
           password: this.password,
           path: `/${this.username}`
         })
-        const request = await fetch(authServerURL, {
+        const request = await fetch(loginURL, {
           method: 'POST',
           body: body,
           headers: { 'Content-Type': 'application/json' }
         })
         const response = await request.json()
         if (response?.success) {
-          this.loggedIn = true
+          this.error = null
           this.token = response.token
+          this.switchPage('home')
           this.fetchNotice()
+        } else {
+          this.error = 'Login failed'
         }
       },
       async fetchNotice() {
-        const resourceServerURL = `http://localhost:30081/${this.username}`
-        const request = await fetch(resourceServerURL, {
+        const resourceURL = `http://localhost:30081/${encodeURIComponent(this.username)}`
+        const request = await fetch(resourceURL, {
           headers: {
             'Authorization': `Bearer ${this.token}`
           }
@@ -64,6 +92,28 @@
 
         // update notice
         this.notice = response
+      },
+      switchPage(nextPage) {
+        this.page = nextPage
+      },
+      async signup() {
+        const signupURL = 'http://localhost:30082/signup'
+        const body = JSON.stringify({
+          username: this.username,
+          password: this.password
+        })
+        const request = await fetch(signupURL, {
+          method: 'POST',
+          body: body,
+          headers: { 'Content-Type': 'application/json' }
+        })
+        const response = await request.json()
+        if (response?.success) {
+          this.error = null
+          this.switchPage('login')
+        } else {
+          this.error = 'Signup failed'
+        }
       }
     }
   }).mount('#app')
