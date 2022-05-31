@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
   @RequestMapping("/{username}")
   public String user(@PathVariable String username) {
-    return "Nothing.";
+    return "Hi " + username + ", we have nothing to inform you.";
   }
 
   @RequestMapping("/admin")

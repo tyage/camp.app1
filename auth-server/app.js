@@ -2,17 +2,17 @@ const express = require('express')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = "JWT SECRET"
+const NOTIFICATION_JWT_SECRET = "JWT SECRET"
 
 const passwordTable = new Map()
 passwordTable.set('admin', 'secretadminpassword.gzuOmraX0TXytCw0')
 
-const issueToken = (path) => {
+const issueNotificationToken = (url) => {
   return jwt.sign(
     {
-      aud: [path]
+      aud: [url]
     },
-    JWT_SECRET,
+    NOTIFICATION_JWT_SECRET,
     { algorithm: 'HS256' }
   );
 }
@@ -43,16 +43,6 @@ const signup = (username, password) => {
   return true
 }
 
-const pathAllowed = (user, path) => {
-  switch (user.role) {
-    case 'admin':
-      return true;
-    default:
-      // normal users are only allowed to access /{user.username}
-      return `/${user.username}` === path
-  }
-}
-
 const app = express()
 
 app.use(bodyParser.json());
@@ -65,15 +55,17 @@ app.use((req, res, next) => {
 })
 
 app.post('/login', (req, res) => {
-  const { username, password, path } = req.body
+  const { username, password } = req.body
 
   // try login
   const user = login(username, password)
+  const notificationUrl = `http://localhost:30081/${username}`
 
-  if (user && pathAllowed(user, path)) {
+  if (user) {
     res.send({
       success: true,
-      token: issueToken(path)
+      notificationToken: issueNotificationToken(notificationUrl),
+      notificationUrl
     })
   } else {
     res.send({

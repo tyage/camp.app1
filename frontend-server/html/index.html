@@ -14,30 +14,34 @@
   </div>
   <div v-else-if="page === 'signup'">
     <h1>Signup</h1>
-    <div>
-      Username: <input type="text" name="username" v-model="username">
-    </div>
-    <div>
-      Password: <input type="password" name="password" v-model="password">
-    </div>
-    <div>
-      <button @click="signup">Signup</button>
-    </div>
+    <form @submit.prevent="signup">
+      <div>
+        Username: <input type="text" name="username" pattern="[a-z0-9]+" v-model="username">
+      </div>
+      <div>
+        Password: <input type="password" name="password" v-model="password">
+      </div>
+      <div>
+        <button>Signup</button>
+      </div>
+    </form>
     <div>
       <a href="#" @click="switchPage('login')">Back to Login</a>
     </div>
   </div>
   <div v-else>
     <h1>Login</h1>
-    <div>
-      Username: <input type="text" name="username" v-model="username">
-    </div>
-    <div>
-      Password: <input type="password" name="password" v-model="password">
-    </div>
-    <div>
-      <button @click="login">Login</button>
-    </div>
+    <form @submit.prevent="login">
+      <div>
+        Username: <input type="text" name="username" pattern="[a-z0-9]+" v-model="username">
+      </div>
+      <div>
+        Password: <input type="password" name="password" v-model="password">
+      </div>
+      <div>
+        <button>Login</button>
+      </div>
+    </form>
     <div>
       <a href="#" @click="switchPage('signup')">Need Signup?</a>
     </div>
@@ -48,23 +52,26 @@
   const { createApp } = Vue
 
   createApp({
+    computed: {
+      authAPIBase: () => 'http://localhost:30082'
+    },
     data() {
       return {
         page: 'login',
         username: null,
         password: null,
-        token: null,
+        notificationUrl: null,
+        notificationToken: null,
         notice: null,
         error: null
       }
     },
     methods: {
       async login() {
-        const loginURL = 'http://localhost:30082/login'
+        const loginURL = `${this.authAPIBase}/login`
         const body = JSON.stringify({
           username: this.username,
-          password: this.password,
-          path: `/${this.username}`
+          password: this.password
         })
         const request = await fetch(loginURL, {
           method: 'POST',
@@ -74,18 +81,19 @@
         const response = await request.json()
         if (response?.success) {
           this.error = null
-          this.token = response.token
-          this.switchPage('home')
+          this.notificationToken = response.notificationToken
+          this.notificationUrl = response.notificationUrl
           this.fetchNotification()
+          this.switchPage('home')
         } else {
           this.error = 'Login failed'
         }
       },
       async fetchNotification() {
-        const notificationURL = `http://localhost:30081/${encodeURIComponent(this.username)}`
-        const request = await fetch(notificationURL, {
+        const request = await fetch(this.notificationUrl, {
           headers: {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${this.notificationToken
+              }`
           }
         })
         const response = await request.text()
@@ -97,7 +105,7 @@
         this.page = nextPage
       },
       async signup() {
-        const signupURL = 'http://localhost:30082/signup'
+        const signupURL = `${this.authAPIBase}/signup`
         const body = JSON.stringify({
           username: this.username,
           password: this.password

@@ -53,7 +53,7 @@ public class AuthFilter extends OncePerRequestFilter {
     if (audience == null) {
       return false;
     }
-    Boolean matchAudience = audience.stream().anyMatch(s -> s.equals(request.getRequestURI()));
+    Boolean matchAudience = audience.stream().anyMatch(s -> s.equals(request.getRequestURL().toString()));
     return matchAudience;
   }
 
