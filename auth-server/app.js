@@ -59,12 +59,15 @@ app.post('/login', (req, res) => {
 
   // try login
   const user = login(username, password)
+
+  // allow users to access http://notificationServer/${username}
   const notificationUrl = `http://localhost:30081/${username}`
+  const notificationToken = issueNotificationToken(notificationUrl)
 
   if (user) {
     res.send({
       success: true,
-      notificationToken: issueNotificationToken(notificationUrl),
+      notificationToken,
       notificationUrl
     })
   } else {
