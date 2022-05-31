@@ -76,14 +76,14 @@
           this.error = null
           this.token = response.token
           this.switchPage('home')
-          this.fetchNotice()
+          this.fetchNotification()
         } else {
           this.error = 'Login failed'
         }
       },
-      async fetchNotice() {
-        const resourceURL = `http://localhost:30081/${encodeURIComponent(this.username)}`
-        const request = await fetch(resourceURL, {
+      async fetchNotification() {
+        const notificationURL = `http://localhost:30081/${encodeURIComponent(this.username)}`
+        const request = await fetch(e, {
           headers: {
             'Authorization': `Bearer ${this.token}`
           }

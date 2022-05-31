@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  resource:
+  notification:
     build: 
       context: .
       dockerfile: Dockerfile

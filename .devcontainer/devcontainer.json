@@ -2,13 +2,13 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.195.0/containers/java
 {
 	"name": "app",
-	"service": "resource",
+	"service": "notification",
 	"dockerComposeFile": [
 		"docker-compose.yml"
 	],
 	"workspaceFolder": "/workspace",
 	"runServices": [
-		"resource",
+		"notification",
 		"auth",
 		"frontend"
 	],

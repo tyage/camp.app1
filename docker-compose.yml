@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  resource:
-    build: ./resource-server
+  notification:
+    build: ./notification-server
     ports:
       - 30081:8080
   auth:
