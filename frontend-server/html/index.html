@@ -16,7 +16,7 @@
     <h1>Signup</h1>
     <form @submit.prevent="signup">
       <div>
-        Username: <input type="text" name="username" pattern="[a-z0-9]+" v-model="username">
+        Username: <input type="text" name="username" v-model="username">
       </div>
       <div>
         Password: <input type="password" name="password" v-model="password">
@@ -33,7 +33,7 @@
     <h1>Login</h1>
     <form @submit.prevent="login">
       <div>
-        Username: <input type="text" name="username" pattern="[a-z0-9]+" v-model="username">
+        Username: <input type="text" name="username" v-model="username">
       </div>
       <div>
         Password: <input type="password" name="password" v-model="password">

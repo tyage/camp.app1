@@ -1,9 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const { compile } = require("path-to-regexp");
 
 const NOTIFICATION_JWT_SECRET = process.env.NOTIFICATION_JWT_SECRET
 const NOTIFICATION_BASE_URL = process.env.NOTIFICATION_BASE_URL
+const NOTIFICATION_USER_PATH = "/:username"
 
 const passwordTable = new Map()
 passwordTable.set('admin', 'secretadminpassword.gzuOmraX0TXytCw0')
@@ -61,8 +63,8 @@ app.post('/login', (req, res) => {
   // try login
   const user = login(username, password)
 
-  // allow users to access http://notificationServer/${username}
-  const notificationUrl = `${NOTIFICATION_BASE_URL}/${username}`
+  // allow users to access http://notification/:username
+  const notificationUrl = NOTIFICATION_BASE_URL + compile(NOTIFICATION_USER_PATH)({ username })
   const notificationToken = issueNotificationToken(notificationUrl)
 
   if (user) {
