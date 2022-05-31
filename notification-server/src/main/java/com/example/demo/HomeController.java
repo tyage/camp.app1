@@ -15,6 +15,6 @@ public class HomeController {
 
   @RequestMapping("/admin")
   public String admin() {
-    return "Welcome to the admin panel!";
+    return "Hello admin! Here is secret information: Flag{BlahBlahBlah}";
   }
 }
