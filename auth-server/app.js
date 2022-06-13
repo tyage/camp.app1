@@ -90,6 +90,8 @@ app.post('/signup', (req, res) => {
   res.send({ success: result })
 })
 
+// お知らせ用トークン返却API
+// ログインセッションの代わりにユーザ名、パスワードを受け取っているのは手抜き
 app.post('/notificationToken', (req, res) => {
   const { username, password, notificationPath } = req.body
 

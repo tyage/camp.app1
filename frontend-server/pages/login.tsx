@@ -8,8 +8,8 @@ import { login } from '../lib/api'
 import { UserContext } from '../lib/context'
 
 const Login: NextPage = () => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const router = useRouter()
   const { setUser } = useContext(UserContext)
 
@@ -17,8 +17,11 @@ const Login: NextPage = () => {
     event.preventDefault()
 
     const result = await login(username, password)
-    if (result.success && result.user) {
-      setUser(result.user)
+    if (result.success) {
+      setUser({
+        username,
+        password
+      })
       toast.success('ログイン完了')
       router.push('/')
     } else {

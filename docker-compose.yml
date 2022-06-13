@@ -16,11 +16,11 @@ services:
       - NOTIFICATION_JWT_SECRET=superdupersecretkey
 
   frontend:
-    image: nginx
-    volumes:
-      - ./frontend-server/html:/usr/share/nginx/html
+    build: ./frontend-server
     ports:
-      - 30080:80
+      - 30080:3000
     environment:
       - NEXT_PUBLIC_AUTH_API_BASE=http://localhost:30082
       - NEXT_PUBLIC_NOTIFICATION_API_BASE=http://localhost:30081
+    volumes:
+      - ./frontend-server:/app

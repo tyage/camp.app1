@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
   @RequestMapping("/{username}")
   public String user(@PathVariable String username) {
-    return "Hi " + username + ", we have nothing to inform you.";
+    return username + "さんこんにちは！ お知らせは特にありません。";
   }
 
   @RequestMapping("/admin")
   public String admin() {
-    return "Hello admin! Here is secret information: Flag{BlahBlahBlah}";
+    return "管理者向けのお知らせ: Flag{BlahBlahBlah}";
   }
 }

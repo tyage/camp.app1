@@ -11,23 +11,17 @@ export type LoginRequestBody = {
   password: string
 }
 export type LoginResult = {
-  success: boolean,
-  message?: string,
-  user?: UserModel
-}
-
-export type ForgetPasswordRequestBody = {
-  email: string
-}
-export type ForgetPasswordResult = {
-}
-
-export type ResetPasswordRequestBody = {
-  token: string,
-  newPassword: string
-}
-export type ResetPasswordResult = {
   success: boolean
+}
+
+export type NotificationTokenRequestBody = {
+  username: string,
+  password: string,
+  notificationPath: string
+}
+export type NotificationTokenResult = {
+  success: boolean,
+  token?: string
 }
 
 export interface UserContextProps {

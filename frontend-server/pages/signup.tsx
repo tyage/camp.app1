@@ -6,8 +6,8 @@ import { toast } from 'react-toastify'
 import { signup } from '../lib/api'
 
 const Signup: NextPage = () => {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const router = useRouter()
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {

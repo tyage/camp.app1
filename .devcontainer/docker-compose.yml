@@ -4,27 +4,9 @@ services:
   notification:
     build: 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: .devcontainer/Dockerfile
       args: 
         VARIANT: 11-bullseye
-    ports:
-      - 30081:8080
     command: sleep infinity
     volumes:
-      - ..:/workspace:cached
-    environment:
-      - JWT_SECRET=superdupersecretkey
-
-  auth:
-    build: ../auth-server
-    ports:
-      - 30082:3000
-    environment:
-      - NOTIFICATION_JWT_SECRET=superdupersecretkey
-
-  frontend:
-    image: nginx
-    volumes:
-      - ../frontend-server/html:/usr/share/nginx/html
-    ports:
-      - 30080:80
+      - .:/workspace:cached
