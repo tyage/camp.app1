@@ -21,3 +21,6 @@ services:
       - ./frontend-server/html:/usr/share/nginx/html
     ports:
       - 30080:80
+    environment:
+      - NEXT_PUBLIC_AUTH_API_BASE=http://localhost:30082
+      - NEXT_PUBLIC_NOTIFICATION_API_BASE=http://localhost:30081
