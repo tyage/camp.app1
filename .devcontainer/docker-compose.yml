@@ -21,7 +21,6 @@ services:
       - 30082:3000
     environment:
       - NOTIFICATION_JWT_SECRET=superdupersecretkey
-      - NOTIFICATION_BASE_URL=http://localhost:30081
 
   frontend:
     image: nginx

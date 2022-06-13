@@ -51,71 +51,84 @@
 <script>
   const { createApp } = Vue
 
+  const api = {
+    notificationAPIBase: 'http://localhost:30081',
+    authAPIBase: 'http://localhost:30082',
+  }
+  api.login = async (username, password) => {
+    const loginURL = `${api.authAPIBase}/login`
+    const body = JSON.stringify({ username, password })
+    const request = await fetch(loginURL, {
+      method: 'POST',
+      body,
+      headers: { 'Content-Type': 'application/json' }
+    })
+    return await request.json()
+  }
+  api.signup = async (username, password) => {
+    const signupURL = `${api.authAPIBase}/signup`
+    const body = JSON.stringify({ username, password })
+    const request = await fetch(signupURL, {
+      method: 'POST',
+      body,
+      headers: { 'Content-Type': 'application/json' }
+    })
+    return await request.json()
+  }
+  api.fetchNotificationToken = async (username, password, notificationPath) => {
+    const tokenURL = `${api.authAPIBase}/notificationToken`
+    const body = JSON.stringify({ username, password, notificationPath })
+    const request = await fetch(tokenURL, {
+      method: 'POST',
+      body: body,
+      headers: { 'Content-Type': 'application/json' }
+    })
+    return await request.json()
+  }
+  api.fetchNotification = async (path, token) => {
+    const url = api.notificationAPIBase + path
+    const request = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    return await request.text()
+  }
+
   createApp({
-    computed: {
-      authAPIBase: () => 'http://localhost:30082'
-    },
     data() {
       return {
         page: 'login',
         username: null,
         password: null,
-        notificationUrl: null,
-        notificationToken: null,
         notice: null,
         error: null
       }
     },
     methods: {
       async login() {
-        const loginURL = `${this.authAPIBase}/login`
-        const body = JSON.stringify({
-          username: this.username,
-          password: this.password
-        })
-        const request = await fetch(loginURL, {
-          method: 'POST',
-          body: body,
-          headers: { 'Content-Type': 'application/json' }
-        })
-        const response = await request.json()
+        const response = await api.login(this.username, this.password)
         if (response?.success) {
           this.error = null
-          this.notificationToken = response.notificationToken
-          this.notificationUrl = response.notificationUrl
-          this.fetchNotification()
+
+          // update notification
+          const notificationPath = `/${this.username}`
+          const { token: notificationToken } = await api.fetchNotificationToken(
+            this.username, this.password, notificationPath)
+          if (notificationToken) {
+            this.notice = await api.fetchNotification(notificationPath, notificationToken)
+          }
+
           this.switchPage('home')
         } else {
           this.error = 'Login failed'
         }
       },
-      async fetchNotification() {
-        const request = await fetch(this.notificationUrl, {
-          headers: {
-            'Authorization': `Bearer ${this.notificationToken
-              }`
-          }
-        })
-        const response = await request.text()
-
-        // update notice
-        this.notice = response
-      },
       switchPage(nextPage) {
         this.page = nextPage
       },
       async signup() {
-        const signupURL = `${this.authAPIBase}/signup`
-        const body = JSON.stringify({
-          username: this.username,
-          password: this.password
-        })
-        const request = await fetch(signupURL, {
-          method: 'POST',
-          body: body,
-          headers: { 'Content-Type': 'application/json' }
-        })
-        const response = await request.json()
+        const response = await api.signup(this.username, this.password)
         if (response?.success) {
           this.error = null
           this.switchPage('login')

@@ -1,10 +1,9 @@
 const express = require('express')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
-const { compile } = require("path-to-regexp");
+const { match } = require("path-to-regexp");
 
 const NOTIFICATION_JWT_SECRET = process.env.NOTIFICATION_JWT_SECRET
-const NOTIFICATION_BASE_URL = process.env.NOTIFICATION_BASE_URL
 const NOTIFICATION_USER_PATH = "/:username"
 
 const passwordTable = new Map()
@@ -18,6 +17,21 @@ const issueNotificationToken = (url) => {
     NOTIFICATION_JWT_SECRET,
     { algorithm: 'HS256' }
   );
+}
+
+const notificationPathAllowedForUser = (user, notificationPath) => {
+  // allow all paths for admin
+  if (user.role === 'admin') {
+    return true
+  }
+
+  // normal users can access to the pattern /:username
+  const matchedPath = match(NOTIFICATION_USER_PATH)(notificationPath)
+  if (!matchedPath) {
+    return false
+  }
+  // user can only access to their own notification URL
+  return user.username === matchedPath.params.username
 }
 
 const login = (username, password) => {
@@ -62,21 +76,10 @@ app.post('/login', (req, res) => {
 
   // try login
   const user = login(username, password)
-
-  // allow users to access http://notification/:username
-  const notificationUrl = NOTIFICATION_BASE_URL + compile(NOTIFICATION_USER_PATH)({ username })
-  const notificationToken = issueNotificationToken(notificationUrl)
-
   if (user) {
-    res.send({
-      success: true,
-      notificationToken,
-      notificationUrl
-    })
+    res.send({ success: true })
   } else {
-    res.send({
-      success: false
-    })
+    res.send({ success: false })
   }
 })
 
@@ -84,10 +87,25 @@ app.post('/signup', (req, res) => {
   const { username, password } = req.body
 
   const result = signup(username, password)
+  res.send({ success: result })
+})
 
-  res.send({
-    success: result
-  })
+app.post('/notificationToken', (req, res) => {
+  const { username, password, notificationPath } = req.body
+
+  // try login
+  const user = login(username, password)
+
+  // check if user can access to the path
+  if (user && notificationPathAllowedForUser(user, notificationPath)) {
+    const notificationToken = issueNotificationToken(notificationPath)
+    res.send({
+      success: true,
+      token: notificationToken
+    })
+  } else {
+    res.send({ success: false })
+  }
 })
 
 app.listen(process.env.PORT || 3000)
