@@ -1,15 +1,17 @@
-const express = require('express')
-const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const { match } = require("path-to-regexp");
+import express, { Request } from 'express'
+import bodyParser from 'body-parser'
+import jwt from 'jsonwebtoken'
+import { match } from 'path-to-regexp'
+import { NotificationPathMatcher, User } from './types'
 
-const NOTIFICATION_JWT_SECRET = process.env.NOTIFICATION_JWT_SECRET
+const NOTIFICATION_JWT_SECRET = process.env.NOTIFICATION_JWT_SECRET || 'superdupersecretkey'
 const NOTIFICATION_USER_PATH = "/:username"
 
+// 手抜き。メモリにユーザ情報を保持
 const passwordTable = new Map()
 passwordTable.set('admin', 'secretadminpassword.gzuOmraX0TXytCw0')
 
-const issueNotificationToken = (url) => {
+const issueNotificationToken = (url: string) => {
   return jwt.sign(
     {
       aud: [url]
@@ -19,28 +21,30 @@ const issueNotificationToken = (url) => {
   );
 }
 
-const notificationPathAllowedForUser = (user, notificationPath) => {
-  // allow all paths for admin
+const notificationPathAllowedForUser = (user: User, notificationPath: string) => {
+  // roleがadmin場合は、全てのURLを許可
   if (user.role === 'admin') {
     return true
   }
 
-  // normal users can access to the pattern /:username
-  const matchedPath = match(NOTIFICATION_USER_PATH)(notificationPath)
+  // admin以外のユーザは /:username のみ許可
+  const matchedPath = match<NotificationPathMatcher>(NOTIFICATION_USER_PATH)(notificationPath)
   if (!matchedPath) {
     return false
   }
-  // user can only access to their own notification URL
+
+  // ユーザ専用のURLにしかアクセスできない
   return user.username === matchedPath.params.username
 }
 
-const login = (username, password) => {
-  // verify password
+const login = (username: string, password: string) => {
+  // パスワードチェック
   const savedPassword = passwordTable.get(username)
   if (!savedPassword || savedPassword !== password) {
     return false
   }
 
+  // ユーザ名「admin」はroleも「admin」
   let role = 'normal'
   if (username === 'admin') {
     role = 'admin'
@@ -50,8 +54,8 @@ const login = (username, password) => {
   }
 }
 
-const signup = (username, password) => {
-  // if user is already registered, signup should be failed
+const signup = (username: string, password: string) => {
+  // 登録済みのユーザがいれば失敗
   if (passwordTable.has(username)) {
     return false
   }
@@ -64,7 +68,7 @@ const app = express()
 
 app.use(bodyParser.json());
 
-// allow CORS
+// CORS許可
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Headers', 'Content-Type')
@@ -74,7 +78,6 @@ app.use((req, res, next) => {
 app.post('/login', (req, res) => {
   const { username, password } = req.body
 
-  // try login
   const user = login(username, password)
   if (user) {
     res.send({ success: true })
@@ -95,10 +98,9 @@ app.post('/signup', (req, res) => {
 app.post('/notificationToken', (req, res) => {
   const { username, password, notificationPath } = req.body
 
-  // try login
   const user = login(username, password)
 
-  // check if user can access to the path
+  // ユーザが「notificationPath」にアクセスする権限を有していればトークンを返却
   if (user && notificationPathAllowedForUser(user, notificationPath)) {
     const notificationToken = issueNotificationToken(notificationPath)
     res.send({

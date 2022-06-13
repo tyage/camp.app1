@@ -1,9 +1,6 @@
-FROM node:18
+FROM node:18-alpine
+WORKDIR /app
 
-COPY package.json /src/package.json
-RUN cd /src; npm install
+COPY . /app
 
-COPY . /src
-WORKDIR /src
-
-CMD ["npm", "start"]
+CMD ["sh", "-c", "yarn && yarn start"]
