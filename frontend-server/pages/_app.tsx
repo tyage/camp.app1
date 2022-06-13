@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return <>
     <Head>
-      <title>SECCAMP APP</title>
+      <title>SECCAMP APP 01</title>
       <link rel="icon" href="/favicon.ico" />
     </Head>
     <UserContext.Provider value={{
@@ -42,7 +42,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   textDecoration: 'none',
                 }}
               >
-                SECCAMP APP
+                SECCAMP APP 01
               </Typography>
             </NextLink>
 
