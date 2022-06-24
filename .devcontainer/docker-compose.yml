@@ -10,3 +10,5 @@ services:
     command: sleep infinity
     volumes:
       - .:/workspace:cached
+    ports: []
+    network_mode: service:frontend
