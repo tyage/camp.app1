@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useContext, useEffect, useState } from 'react'
@@ -26,6 +26,17 @@ const Home: NextPage = () => {
   const router = useRouter()
   const [notification, setNotification] = useState('')
 
+  const updateNotification = async () => {
+    if (user === null) {
+      return
+    }
+    const notification = await fetchNotificationFromAPI(
+      user.username,
+      user.password
+    )
+    setNotification(notification)
+  }
+
   useEffect(() => {
     if (user === null) {
       router.push('/login')
@@ -33,15 +44,7 @@ const Home: NextPage = () => {
   }, [user, router])
 
   useEffect(() => {
-    if (user === null) {
-      return
-    }
-    fetchNotificationFromAPI(
-      user.username,
-      user.password
-    ).then(notificaion => {
-      setNotification(notificaion)
-    })
+    updateNotification()
   }, [user])
 
   return (
@@ -50,7 +53,12 @@ const Home: NextPage = () => {
         <>
           <Typography variant="h5">ようこそ</Typography>
           <Box mt={4}>
-            <Typography variant="h6">お知らせ</Typography>
+            <Box style={{ display: 'flex' }}>
+              <Typography variant="h6" style={{ flexGrow: 1 }}>
+                お知らせ
+              </Typography>
+              <Button onClick={updateNotification}>更新</Button>
+            </Box>
             <pre>
               {notification}
             </pre>
