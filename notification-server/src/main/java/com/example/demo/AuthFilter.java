@@ -25,7 +25,8 @@ public class AuthFilter extends OncePerRequestFilter {
   private String JWT_SECRET_KEY;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+  protected void doFilterInternal(HttpServletRequest request,
+      HttpServletResponse response, FilterChain chain)
       throws ServletException, IOException {
     if (request.getMethod().equals("OPTIONS") || isJwtValid(request)) {
       chain.doFilter(request, response);
@@ -55,7 +56,8 @@ public class AuthFilter extends OncePerRequestFilter {
     if (audience == null) {
       return false;
     }
-    Boolean matchAudience = audience.stream().anyMatch(s -> s.equals(request.getRequestURI()));
+    Boolean matchAudience = audience.stream()
+        .anyMatch(s -> s.equals(request.getRequestURI()));
     return matchAudience;
   }
 
