@@ -2,24 +2,24 @@ version: '3'
 
 services:
   frontend:
-    build: ./frontend-server
+    build: ./frontend
     ports:
       - 30080:3000
     environment:
       - NEXT_PUBLIC_AUTH_API_BASE=http://localhost:30082
       - NEXT_PUBLIC_NOTIFICATION_API_BASE=http://localhost:30081
     volumes:
-      - ./frontend-server:/app
+      - ./frontend:/app
 
   notification:
-    build: ./notification-server
+    build: ./notification
     ports:
       - 30081:8080
     environment:
       - JWT_SECRET=superdupersecretkey
 
   auth:
-    build: ./auth-server
+    build: ./auth
     ports:
       - 30082:3000
     environment:
