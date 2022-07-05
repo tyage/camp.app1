@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
   @RequestMapping("/{username}")
   public String user(@PathVariable String username) {
-    return "新しいメッセージ: 管理者「" + username + "さんこんにちは。」";
+    return "新しいメッセージ: システム「" + username + "さんこんにちは。」";
   }
 
   @RequestMapping("/admin")
