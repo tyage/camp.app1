@@ -10,6 +10,8 @@ services:
       - NEXT_PUBLIC_NOTIFICATION_API_BASE=http://localhost:30081
     volumes:
       - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
 
   notification:
     build: ./notification
