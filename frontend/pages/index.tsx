@@ -1,9 +1,10 @@
 import { Box, Button, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { fetchNotification, fetchNotificationToken } from '../lib/api'
 import { UserContext } from '../lib/context'
+import { UserModel } from '../lib/types'
 
 const fetchNotificationFromAPI = async (username: string, password: string): Promise<string> => {
   const notificationPath = `/${username}`
@@ -25,8 +26,9 @@ const Home: NextPage = () => {
   const { user } = useContext(UserContext)
   const router = useRouter()
   const [notification, setNotification] = useState('')
+  const [previousUser, setPreviousUser] = useState<UserModel | null>(null)
 
-  const updateNotification = async () => {
+  const updateNotification = useCallback(async () => {
     if (user === null) {
       return
     }
@@ -35,7 +37,7 @@ const Home: NextPage = () => {
       user.password
     )
     setNotification(notification)
-  }
+  }, [user])
 
   useEffect(() => {
     if (user === null) {
@@ -43,9 +45,10 @@ const Home: NextPage = () => {
     }
   }, [user, router])
 
-  useEffect(() => {
+  if (user && user !== previousUser) {
     updateNotification()
-  }, [user])
+    setPreviousUser(user)
+  }
 
   return (
     <>
