@@ -1,1 +1,1 @@
-demo.jwt_secret=${JWT_SECRET}
+notification.jwt_secret=${JWT_SECRET}

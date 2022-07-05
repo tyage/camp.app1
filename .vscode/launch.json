@@ -7,9 +7,9 @@
             "cwd": "${workspaceFolder}/notification",
             "console": "internalConsole",
             "stopOnEntry": false,
-            "mainClass": "com.example.demo.DemoApplication",
+            "mainClass": "seccamp.notification.NotificationApplication",
             "args": "",
-            "projectName": "demo"
+            "projectName": "notification"
         }
     ]
 }

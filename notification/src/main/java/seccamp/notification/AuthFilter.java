@@ -1,4 +1,4 @@
-package com.example.demo;
+package seccamp.notification;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,8 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 public class AuthFilter extends OncePerRequestFilter {
-  // secret key is shared with authorization service
-  @Value("${demo.jwt_secret:superdupersecretkey}")
+  // authと共有している秘密の鍵
+  @Value("${notification.jwt_secret:superdupersecretkey}")
   private String JWT_SECRET_KEY;
 
   @Override
@@ -35,7 +35,7 @@ public class AuthFilter extends OncePerRequestFilter {
     }
   }
 
-  // check jwt token is valid and request path is allowed
+  // このJWTでリクエストパスにアクセスする権限があるか確認
   private Boolean isJwtValid(HttpServletRequest request) {
     final String jwtToken = retrieveToken(request);
     if (jwtToken == null) {
@@ -51,7 +51,7 @@ public class AuthFilter extends OncePerRequestFilter {
       return false;
     }
 
-    // check request path is equal to path in jwt audience
+    // JWTのaudienceがリクエストパスと一致していればOK
     List<String> audience = jwt.getAudience();
     if (audience == null) {
       return false;
@@ -61,8 +61,7 @@ public class AuthFilter extends OncePerRequestFilter {
     return matchAudience;
   }
 
-  // retrive authorization token
-  // header should be like this
+  // トークン取得
   // Authorization: Bearer XXXXXXX
   private String retrieveToken(HttpServletRequest request) {
     final String tokenPrefix = "Bearer ";

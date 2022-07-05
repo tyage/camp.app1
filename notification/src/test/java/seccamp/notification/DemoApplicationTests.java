@@ -1,10 +1,10 @@
-package com.example.demo;
+package seccamp.notification;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class NotificationApplicationTests {
 
 	@Test
 	void contextLoads() {
