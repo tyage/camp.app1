@@ -2,7 +2,7 @@ version: '3'
 
 services:
   frontend:
-    build: ./frontend
+    image: ghcr.io/tyage/camp.app1-frontend:main
     ports:
       - 30080:3000
     environment:
