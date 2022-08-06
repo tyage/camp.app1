@@ -2,6 +2,8 @@ version: '3'
 
 services:
   frontend:
+    # use pre-built image for shortcut
+    #build: ./frontend
     image: ghcr.io/tyage/camp.app1-frontend:main
     ports:
       - 30080:3000
@@ -17,7 +19,9 @@ services:
       - JWT_SECRET=superdupersecretkey
 
   auth:
-    build: ./auth
+    # use pre-built image for shortcut
+    #build: ./auth
+    image: ghcr.io/tyage/camp.app1-auth:main
     ports:
       - 30082:3000
     environment:
