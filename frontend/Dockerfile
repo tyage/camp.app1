@@ -1,4 +1,11 @@
 FROM node:18-alpine
 WORKDIR /app
 
-CMD ["sh", "-c", "yarn && yarn dev"]
+COPY package.json .
+COPY yarn.lock .
+COPY tsconfig.json .
+RUN yarn install
+
+COPY . .
+
+CMD ["yarn", "dev"]

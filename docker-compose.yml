@@ -8,10 +8,6 @@ services:
     environment:
       - NEXT_PUBLIC_AUTH_API_BASE=http://localhost:30082
       - NEXT_PUBLIC_NOTIFICATION_API_BASE=http://localhost:30081
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
 
   notification:
     build: ./notification
