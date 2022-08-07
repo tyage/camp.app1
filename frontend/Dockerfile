@@ -11,7 +11,7 @@ RUN yarn install
 FROM node:18-alpine
 WORKDIR /app
 
-COPY --from=builder /app/node_modules/ .
+COPY --from=builder /app/node_modules/ ./node_modules/
 COPY . .
 
 CMD ["yarn", "dev"]
